@@ -23,12 +23,6 @@ typedef struct {
     Registers registers;
 } State;
 
-typedef struct {
-    Word opcode;
-    Word arg1;
-    Word arg2;
-} Operation;
-
 static State state;
 
 Word* selectRegister(Word x) {
@@ -53,30 +47,31 @@ int main() {
     read(prog_fd, &state.registers, sizeof(Registers));
     read(prog_fd, state.memory, MEM_SIZE);
 
-    Operation op;
+    Word opcode, operand1, operand2;
 
 loop:
-    op.opcode = state.memory[state.registers.ip];
-    op.arg1   = state.memory[state.registers.ip + 1];
-    op.arg2   = state.memory[state.registers.ip + 2];
 
-    switch (op.opcode) {
+    opcode = state.memory[state.registers.ip];
+    operand1   = state.memory[state.registers.ip + 1];
+    operand2   = state.memory[state.registers.ip + 2];
+
+    switch (opcode) {
         case 0: // NOOP
             break;
         case 1: // LOAD IMMEDIATE
-            *(selectRegister(op.arg1)) = op.arg2;
+            *selectRegister(operand1) = operand2;
             break;
         case 2: // LOAD ADDRESS
-            *(selectRegister(op.arg1)) =
-                state.memory[*(selectRegister(op.arg2))];
+            *selectRegister(operand1) =
+                state.memory[*selectRegister(operand2)];
             break;
         case 3: // STORE
-            state.memory[*(selectRegister(op.arg1))] =
-                *(selectRegister(op.arg2));
+            state.memory[*selectRegister(operand1)] =
+                *selectRegister(operand2);
             break;
         case 4: // ADD
-            *(selectRegister(op.arg1)) =
-                *(selectRegister(op.arg1)) + *(selectRegister(op.arg2));
+            *selectRegister(operand1) =
+                *selectRegister(operand1) + *selectRegister(operand2);
             break;
         case 5: // SUB
         case 6: // JMP
