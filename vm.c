@@ -78,6 +78,7 @@ loop:
                 *selectRegister(operand1) - *selectRegister(operand2);
             break;
         case 6: // JMP
+            state.registers.ip = *selectRegister(operand1);
         case 7: // JZ
         case 8: // JNZ
     }
