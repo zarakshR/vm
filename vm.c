@@ -74,6 +74,9 @@ loop:
                 *selectRegister(operand1) + *selectRegister(operand2);
             break;
         case 5: // SUB
+            *selectRegister(operand1) =
+                *selectRegister(operand1) - *selectRegister(operand2);
+            break;
         case 6: // JMP
         case 7: // JZ
         case 8: // JNZ
