@@ -1,70 +1,13 @@
 #include <fcntl.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#define BYTES_TO_WORDS(x) (x / sizeof(Word))
-#define WORDS_TO_BYTES(x) (x * sizeof(Word))
-
-#ifdef DEBUG
-#include <stdio.h>
-#endif
-
-#define MEM_SIZE 65536
-
-typedef uint16_t Word;
-
-typedef struct {
-    Word ip;
-    Word r1;
-    Word r2;
-    Word r3;
-    Word r4;
-    Word r5;
-    Word r6;
-    Word r7;
-} Registers;
-
-typedef struct {
-    Word* memory;
-    Registers registers;
-} State;
-
-static State state;
-
-// This is janky -- change later
-Word* selectRegister(Word x) {
-    switch (x) {
-        case 0: return &state.registers.ip;
-        case 1: return &state.registers.r1;
-        case 2: return &state.registers.r2;
-        case 3: return &state.registers.r3;
-        case 4: return &state.registers.r4;
-        case 5: return &state.registers.r5;
-        case 6: return &state.registers.r6;
-        case 7: return &state.registers.r7;
-        default: return NULL;
-    }
-}
-
+#include "vm.h"
 int main(int argc, char* argv[]) {
 
     state.memory = malloc(MEM_SIZE * sizeof(Word));
 
-    int prog_fd;
-    ssize_t nread, nwrite;
-
-    prog_fd = open(argv[1], O_RDONLY);
-
-    nread = read(prog_fd, &state.registers, sizeof(Registers));
-#ifdef DEBUG
-    printf("Register Bank Load: %ld Words\n", BYTES_TO_WORDS(nread));
-#endif
-
-    nread = read(prog_fd, state.memory, WORDS_TO_BYTES(MEM_SIZE));
-#ifdef DEBUG
-    printf("Program Memory Load: %ld Words\n", BYTES_TO_WORDS(nread));
-#endif
+    load(argv[1]);
 
     Word opcode, operand1, operand2;
 
@@ -119,17 +62,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    int dump_fd = open("mem.dump", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
-
-    nwrite = write(dump_fd, &state.registers, sizeof(Registers));
-#ifdef DEBUG
-    printf("Register Bank Dump: %ld Words\n", BYTES_TO_WORDS(nwrite));
-#endif
-
-    nwrite = write(dump_fd, state.memory, WORDS_TO_BYTES(MEM_SIZE));
-#ifdef DEBUG
-    printf("Program Memory Dump: %ld Words\n", BYTES_TO_WORDS(nwrite));
-#endif
+    dump("mem.dump");
 
     free(state.memory);
 

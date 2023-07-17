@@ -22,9 +22,9 @@ SANFLAGS=-fsanitize=address,undefined,null,bounds,float-divide-by-zero,integer-d
 LDLIBS=
 
 # Header files
-HEADERS=
+HEADERS=vm types loader_dumper
 # Compilation units
-UNITS=vm
+UNITS=vm types loader_dumper
 
 # Generate lists of headers, sources, objects, and object-with-debugging-symbols
 HDRS=$(patsubst %, $(OBJECT_DIR)/%.h.gch, $(HEADERS))
