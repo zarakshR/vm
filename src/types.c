@@ -1,7 +1,5 @@
 #include "types.h"
 
-State state;
-
 // This is janky -- change later
 Word* selectRegister(Word r) {
     switch (r) {
