@@ -6,15 +6,10 @@ void load(char* progpath) {
     ssize_t nread;
 
     nread = read(prog_fd, &state.registers, sizeof(Registers));
-
-#ifdef DEBUG
-    printf("Register Bank Load: %ld Words\n", BYTES_TO_WORDS(nread));
-#endif
+    DBG_PRINTF("Register Bank Load: %ld Words\n", BYTES_TO_WORDS(nread));
 
     nread = read(prog_fd, state.memory, WORDS_TO_BYTES(MEM_SIZE));
-#ifdef DEBUG
-    printf("Program Memory Load: %ld Words\n", BYTES_TO_WORDS(nread));
-#endif
+    DBG_PRINTF("Program Memory Load: %ld Words\n", BYTES_TO_WORDS(nread));
 }
 
 void dump(char* dumppath) {
@@ -23,12 +18,8 @@ void dump(char* dumppath) {
     ssize_t nwrite;
 
     nwrite = write(dump_fd, &state.registers, sizeof(Registers));
-#ifdef DEBUG
-    printf("Register Bank Dump: %ld Words\n", BYTES_TO_WORDS(nwrite));
-#endif
+    DBG_PRINTF("Register Bank Dump: %ld Words\n", BYTES_TO_WORDS(nwrite));
 
     nwrite = write(dump_fd, state.memory, WORDS_TO_BYTES(MEM_SIZE));
-#ifdef DEBUG
-    printf("Program Memory Dump: %ld Words\n", BYTES_TO_WORDS(nwrite));
-#endif
+    DBG_PRINTF("Program Memory Dump: %ld Words\n", BYTES_TO_WORDS(nwrite));
 }

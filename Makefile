@@ -22,7 +22,7 @@ SANFLAGS=-fsanitize=address,undefined,null,bounds,float-divide-by-zero,integer-d
 LDLIBS=
 
 # Header files
-HEADERS=vm types interpreter loader_dumper
+HEADERS=vm types interpreter loader_dumper debug
 # Compilation units
 UNITS=vm types interpreter loader_dumper
 
