@@ -2,7 +2,7 @@
 
 void load(char* progpath) {
 
-    int prog_fd = open(progpath, O_RDONLY);
+    int prog_fd = open(progpath, O_RDONLY | O_CLOEXEC);
     ssize_t nread;
 
     nread = read(prog_fd, &state.registers, sizeof(Registers));
@@ -14,7 +14,8 @@ void load(char* progpath) {
 
 void dump(char* dumppath) {
 
-    int dump_fd = open(dumppath, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    int dump_fd =
+        open(dumppath, O_WRONLY | O_CREAT | O_CLOEXEC, S_IRUSR | S_IWUSR);
     ssize_t nwrite;
 
     nwrite = write(dump_fd, &state.registers, sizeof(Registers));
