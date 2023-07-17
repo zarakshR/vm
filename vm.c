@@ -25,6 +25,7 @@ typedef struct {
 
 static State state;
 
+// This is janky -- change later
 Word* selectRegister(Word x) {
     switch (x) {
         case 0: return &state.registers.ip;
@@ -41,7 +42,7 @@ Word* selectRegister(Word x) {
 
 int main() {
 
-    state.memory = malloc(MEM_SIZE);
+    state.memory = malloc(MEM_SIZE * sizeof(Word));
 
     int prog_fd = open("program.bin", O_RDONLY);
     read(prog_fd, &state.registers, sizeof(Registers));
@@ -49,46 +50,45 @@ int main() {
 
     Word opcode, operand1, operand2;
 
-loop:
+    for (; state.registers.ip != MEM_SIZE - 1; state.registers.ip += 3) {
 
-    opcode = state.memory[state.registers.ip];
-    operand1   = state.memory[state.registers.ip + 1];
-    operand2   = state.memory[state.registers.ip + 2];
+        opcode   = state.memory[state.registers.ip];
+        operand1 = state.memory[state.registers.ip + 1];
+        operand2 = state.memory[state.registers.ip + 2];
 
-    switch (opcode) {
-        case 0: // NOOP
-            break;
-        case 1: // LOAD IMMEDIATE
-            *selectRegister(operand1) = operand2;
-            break;
-        case 2: // LOAD ADDRESS
-            *selectRegister(operand1) =
-                state.memory[*selectRegister(operand2)];
-            break;
-        case 3: // STORE
-            state.memory[*selectRegister(operand1)] =
-                *selectRegister(operand2);
-            break;
-        case 4: // ADD
-            *selectRegister(operand1) =
-                *selectRegister(operand1) + *selectRegister(operand2);
-            break;
-        case 5: // SUB
-            *selectRegister(operand1) =
-                *selectRegister(operand1) - *selectRegister(operand2);
-            break;
-        case 6: // JMP
-            state.registers.ip = *selectRegister(operand1);
-        case 7: // JZ
-        case 8: // JNZ
+        switch (opcode) {
+            case 0: // NOOP
+                break;
+            case 1: // LOAD IMMEDIATE
+                *selectRegister(operand1) = operand2;
+                break;
+            case 2: // LOAD ADDRESS
+                *selectRegister(operand1) =
+                    state.memory[*selectRegister(operand2)];
+                break;
+            case 3: // STORE
+                state.memory[*selectRegister(operand1)] =
+                    *selectRegister(operand2);
+                break;
+            case 4: // ADD
+                *selectRegister(operand1) =
+                    *selectRegister(operand1) + *selectRegister(operand2);
+                break;
+            case 5: // SUB
+                *selectRegister(operand1) =
+                    *selectRegister(operand1) - *selectRegister(operand2);
+                break;
+            case 6: // JMP
+                state.registers.ip = *selectRegister(operand1) - 3;
+                continue;
+            case 7: // JZ
+            case 8: // JNZ
+        }
     }
-
-    state.registers.ip += 3;
-    if (state.registers.ip != (65536 - 1)) { goto loop; }
 
     int dump_fd = open("mem.dump", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
     write(dump_fd, &state.registers, sizeof(Registers));
-    write(dump_fd, state.memory, MEM_SIZE);
+    write(dump_fd, state.memory, MEM_SIZE * sizeof(Word));
 
     free(state.memory);
 
