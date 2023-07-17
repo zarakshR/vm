@@ -50,8 +50,7 @@ void interpret(void) {
                     continue;
                 }
                 break;
-            default:
-                DBG_PRINTF("Unrecognised OPCODE: %04x\n", opcode)
+            default: DBG_PRINTF("Unrecognised OPCODE: %04x\n", opcode)
         }
     }
 }
