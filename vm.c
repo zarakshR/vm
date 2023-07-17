@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#define BYTES_TO_WORDS(x) (x / sizeof(Word))
+#define WORDS_TO_BYTES(x) (x * sizeof(Word))
+
 #ifdef DEBUG
 #include <stdio.h>
 #endif
@@ -48,9 +51,20 @@ int main(int argc, char* argv[]) {
 
     state.memory = malloc(MEM_SIZE * sizeof(Word));
 
-    int prog_fd = open(argv[1], O_RDONLY);
-    read(prog_fd, &state.registers, sizeof(Registers));
-    read(prog_fd, state.memory, MEM_SIZE);
+    int prog_fd;
+    ssize_t nread, nwrite;
+
+    prog_fd = open(argv[1], O_RDONLY);
+
+    nread = read(prog_fd, &state.registers, sizeof(Registers));
+#ifdef DEBUG
+    printf("Register Bank Load: %ld Words\n", BYTES_TO_WORDS(nread));
+#endif
+
+    nread = read(prog_fd, state.memory, WORDS_TO_BYTES(MEM_SIZE));
+#ifdef DEBUG
+    printf("Program Memory Load: %ld Words\n", BYTES_TO_WORDS(nread));
+#endif
 
     Word opcode, operand1, operand2;
 
@@ -106,8 +120,16 @@ int main(int argc, char* argv[]) {
     }
 
     int dump_fd = open("mem.dump", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
-    write(dump_fd, &state.registers, sizeof(Registers));
-    write(dump_fd, state.memory, MEM_SIZE * sizeof(Word));
+
+    nwrite = write(dump_fd, &state.registers, sizeof(Registers));
+#ifdef DEBUG
+    printf("Register Bank Dump: %ld Words\n", BYTES_TO_WORDS(nwrite));
+#endif
+
+    nwrite = write(dump_fd, state.memory, WORDS_TO_BYTES(MEM_SIZE));
+#ifdef DEBUG
+    printf("Program Memory Dump: %ld Words\n", BYTES_TO_WORDS(nwrite));
+#endif
 
     free(state.memory);
 
