@@ -1,7 +1,3 @@
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 #include "vm.h"
 
 State state;
