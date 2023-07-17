@@ -82,7 +82,17 @@ int main() {
                 state.registers.ip = *selectRegister(operand1) - 3;
                 continue;
             case 7: // JZ
+                if(*selectRegister(operand1) == 0) {
+                    state.registers.ip = *selectRegister(operand2) - 3;
+                    continue;
+                }
+                break;
             case 8: // JNZ
+                if(*selectRegister(operand1) != 0) {
+                    state.registers.ip = *selectRegister(operand2) - 3;
+                    continue;
+                }
+                break;
         }
     }
 
