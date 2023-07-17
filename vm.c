@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#ifdef DEBUG
+    #include <stdio.h>
+#endif
+
 #define MEM_SIZE 65536
 
 typedef uint16_t Word;
@@ -55,6 +59,10 @@ int main() {
         opcode   = state.memory[state.registers.ip];
         operand1 = state.memory[state.registers.ip + 1];
         operand2 = state.memory[state.registers.ip + 2];
+
+#ifdef DEBUG
+        printf("IP:%04x OP:%04x O1:%04x O2:%04x\n", state.registers.ip, opcode, operand1, operand2);
+#endif
 
         switch (opcode) {
             case 0: // NOOP
