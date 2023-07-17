@@ -3,5 +3,6 @@
 
 #include "types.h"
 #include "loader_dumper.h"
+#include "interpreter.h"
 
 #endif
