@@ -80,7 +80,7 @@ $(BIN_DIR)/$(P)_debug: $(OBJS_DEBUG)
 
 # Run program
 .PHONY: run
-run: $(BIN_DIR)/$(P)
+run: $(BIN_DIR)/$(P) program.bin
 	$^
 
 # Start gdb on debug build
