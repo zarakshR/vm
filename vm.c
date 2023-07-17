@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 #ifdef DEBUG
-    #include <stdio.h>
+#include <stdio.h>
 #endif
 
 #define MEM_SIZE 65536
@@ -44,11 +44,11 @@ Word* selectRegister(Word x) {
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 
     state.memory = malloc(MEM_SIZE * sizeof(Word));
 
-    int prog_fd = open("program.bin", O_RDONLY);
+    int prog_fd = open(argv[1], O_RDONLY);
     read(prog_fd, &state.registers, sizeof(Registers));
     read(prog_fd, state.memory, MEM_SIZE);
 
@@ -61,7 +61,8 @@ int main() {
         operand2 = state.memory[state.registers.ip + 2];
 
 #ifdef DEBUG
-        printf("IP:%04x OP:%04x O1:%04x O2:%04x\n", state.registers.ip, opcode, operand1, operand2);
+        printf("IP:%04x OP:%04x O1:%04x O2:%04x\n", state.registers.ip, opcode,
+               operand1, operand2);
 #endif
 
         switch (opcode) {
@@ -90,13 +91,13 @@ int main() {
                 state.registers.ip = *selectRegister(operand1) - 3;
                 continue;
             case 7: // JZ
-                if(*selectRegister(operand1) == 0) {
+                if (*selectRegister(operand1) == 0) {
                     state.registers.ip = *selectRegister(operand2) - 3;
                     continue;
                 }
                 break;
             case 8: // JNZ
-                if(*selectRegister(operand1) != 0) {
+                if (*selectRegister(operand1) != 0) {
                     state.registers.ip = *selectRegister(operand2) - 3;
                     continue;
                 }
